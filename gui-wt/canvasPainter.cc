@@ -43,8 +43,10 @@
 #include "wtGeometry.h"
 #include <cairo_base.h>
 #include <algorithm>
+#ifndef CMAKE_BUILD
 #include <megabitz/xgl.h>
 #include <megabitz/cairorenderer.h>
+#endif
 #include <ecolab_epilogue.h>
 
 namespace minsky { namespace gui {

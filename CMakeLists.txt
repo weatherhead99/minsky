@@ -8,7 +8,7 @@ include(dependencies.cmake)
 set(CMAKE_CXX_STANDARD 11)
 #TODO: fix some of these definitions!
 add_definitions(-DTR1 -DCAIRO -DTK )
-
+add_definitions(-DCMAKE_BUILD)
 
 #TODO: REMOVE MANUAL ECOLABs
 set(ECOLAB_DIR "/home/danw/Software/ecolab/")
@@ -24,13 +24,39 @@ include(${ECOLAB_DIR}/classdesc/classdesc.cmake)
 set(CLASSDESC_INC ${ECOLAB_DIR}classdesc/)
 message(STATUS "CLASSDESC_INC: ${CLASSDESC_INC}")
 
+find_library(libecolab ecolab "${ECOLAB_DIR}/build/src/")
+message(STATUS "ecolab lib: ${libecolab}")
+
+add_definitions(-DECOLAB_LIB="${libecolab}")
+
+
 #ENDTODO
 
+
+#generate ecolab classdesc files 
+set(ECOLAB_XCDS plot.xcd)
+foreach(xcd ${ECOLAB_XCDS})
+classdesc_xcd(${xcd} ${ECOLAB_INCDIR} ${CMAKE_SOURCE_DIR})
+get_filename_component(absxcd ${xcd} PATH)
+endforeach()
+
+
+set(ECOLAB_CDS)
+foreach(cd ${ECOLAB_CDS})
+classdesc_xcd(${cd} ${ECOLAB_INCDIR} ${CMAKE_SOURCE_DIR})
+endforeach()
+
+add_library(ecolab_classdesc_files OBJECT ${ECOLAB_CDS} ${ECOLAB_XCDS})
+
+
 include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_BINARY_DIR})
 #classdesc_generate_cd(${CMAKE_SOURCE_DIR}/intrusiveMap.h)
 
 include_directories(schema engine GUI)
 
 add_subdirectory(schema)
-
+add_subdirectory(server)
 add_subdirectory(engine)
+add_subdirectory(GUI)
+add_subdirectory(gui-wt)
